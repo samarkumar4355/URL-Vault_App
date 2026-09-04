@@ -8,6 +8,9 @@ const User = require('./models/User');
 // Initialize Express application
 const app = express();
 
+// Trust reverse proxy (e.g. Render) to ensure secure cookies work over HTTPS
+app.set('trust proxy', 1);
+
 // View engine setup (EJS templates located in src/views)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
