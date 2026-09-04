@@ -36,6 +36,25 @@ function escapeHTML(str) {
   }[tag] || tag));
 }
 
+/**
+ * Generates a Google S2 favicon service URL from a website URL.
+ * Safely extracts the hostname using the URL API on the frontend.
+ *
+ * @param {string} urlString
+ * @returns {string|null}
+ */
+function getFaviconUrl(urlString) {
+  if (!urlString || typeof urlString !== 'string') return null;
+  try {
+    const parsed = new URL(urlString.trim());
+    const hostname = parsed.hostname;
+    if (!hostname) return null;
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=64`;
+  } catch {
+    return null;
+  }
+}
+
 // Initialize client-side handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   // ── SEARCH LOGIC ──────────────────────────────────────────────────────────
@@ -205,11 +224,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
               ${imageHtml}
 
-              <h2 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.3;">
-                <a href="/links/${linkId}" style="color: var(--text-primary); text-decoration: none;">
-                  ${title}
-                </a>
-              </h2>
+              <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                ${(() => {
+                  const fav = getFaviconUrl(link.url);
+                  if (fav) {
+                    const safeFav = escapeHTML(fav);
+                    return `<img src="${safeFav}" alt="" width="32" height="32" style="width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0; object-fit: contain; background: rgba(255, 255, 255, 0.04);" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';" loading="lazy"><span style="display: none; width: 32px; height: 32px; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">🔗</span>`;
+                  }
+                  return `<span style="display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">🔗</span>`;
+                })()}
+                <h2 style="font-size: 1.15rem; font-weight: 600; margin: 0; line-height: 1.3;">
+                  <a href="/links/${linkId}" style="color: var(--text-primary); text-decoration: none;">
+                    ${title}
+                  </a>
+                </h2>
+              </div>
 
               ${description ? `<p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">${description}</p>` : ''}
             </div>

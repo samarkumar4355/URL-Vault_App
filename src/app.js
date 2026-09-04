@@ -4,6 +4,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
+const { getFaviconUrl } = require('./utils/favicon');
 
 // Initialize Express application
 const app = express();
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
+  res.locals.getFaviconUrl = getFaviconUrl;
   next();
 });
 
