@@ -3,17 +3,10 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const helmet = require('helmet');
 const User = require('./models/User');
 
 // Initialize Express application
 const app = express();
-
-// HTTP Security Headers (Helmet)
-// Disable default CSP to maintain full compatibility with inline styles/scripts in EJS views
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
 
 // View engine setup (EJS templates located in src/views)
 app.set('view engine', 'ejs');

@@ -125,34 +125,26 @@ const getDashboard = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    // 1. Total links created by the authenticated user
-    const totalLinks = await Link.countDocuments({ owner: userId });
+    // Fetch all links belonging to the logged-in user
+    const userLinks = await Link.find({ owner: userId });
 
-    // 2. Total public links
-    const publicLinks = await Link.countDocuments({ owner: userId, visibility: 'public' });
+    const totalLinks = userLinks.length;
+    let publicLinks = 0;
+    let privateLinks = 0;
+    let totalViews = 0;
+    let totalLikes = 0;
 
-    // 3. Total private links
-    const privateLinks = await Link.countDocuments({ owner: userId, visibility: 'private' });
+    for (const link of userLinks) {
+      if (link.visibility === 'public') publicLinks++;
+      if (link.visibility === 'private') privateLinks++;
+      totalViews += link.views || 0;
+      totalLikes += link.likes || 0;
+    }
 
-    // 4. Total views across all of the user's links using aggregation $sum
-    const viewsAggregation = await Link.aggregate([
-      { $match: { owner: new mongoose.Types.ObjectId(userId) } },
-      { $group: { _id: null, totalViews: { $sum: '$views' } } }
-    ]);
-    const totalViews = viewsAggregation.length > 0 ? viewsAggregation[0].totalViews : 0;
-
-    // 5. Total likes across all of the user's links using aggregation $sum
-    const likesAggregation = await Link.aggregate([
-      { $match: { owner: new mongoose.Types.ObjectId(userId) } },
-      { $group: { _id: null, totalLikes: { $sum: '$likes' } } }
-    ]);
-    const totalLikes = likesAggregation.length > 0 ? likesAggregation[0].totalLikes : 0;
-
-    // 6. Most viewed link
+    // Most viewed and most liked links
     const mostViewedLink = await Link.findOne({ owner: userId })
       .sort({ views: -1, createdAt: -1 });
 
-    // 7. Most liked link
     const mostLikedLink = await Link.findOne({ owner: userId })
       .sort({ likes: -1, createdAt: -1 });
 

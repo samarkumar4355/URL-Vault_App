@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Link = require('../models/Link');
 const Like = require('../models/Like');
 const AppError = require('../utils/AppError');
-const { fetchMetadata } = require('../services/metadata.service');
 
 /**
  * Render the form to create a new link.
@@ -21,30 +20,15 @@ const getCreateLink = (req, res) => {
 /**
  * Handle submission of the new link form.
  * POST /links
- * Note: Input validation is handled by validateCreateLink middleware before this runs.
- *
- * Flow:
- *   1. Receive form data (url, title, description, visibility, …)
- *   2. Fetch Open Graph metadata from the URL (best-effort, never blocks save)
- *   3. Apply metadata fallbacks: only fill fields the user left empty
- *   4. Save the Link document to MongoDB
+ * Input validation is handled by validateCreateLink middleware before this runs.
  */
 const createLink = async (req, res, next) => {
   const { url, title, description, category, tags, visibility } = req.body;
 
-  // ── Step 1: Fetch metadata from the external URL ──────────────────────
-  // fetchMetadata() NEVER throws — if the site is down or returns an error
-  // it simply returns { title: '', description: '', image: '' }.
-  const metadata = await fetchMetadata(url.trim());
-
-  // ── Step 2: Apply fallback rules ──────────────────────────────────────
-  // User-provided values always take priority.
-  // Metadata values are only used when the user left a field blank.
-  const finalTitle = (title && title.trim()) || metadata.title || 'Untitled';
-  const finalDescription = (description && description.trim()) || metadata.description || '';
-  const finalImage = metadata.image || ''; // image always comes from metadata (form has no image field)
-
   try {
+    const finalTitle = (title && title.trim()) || 'Untitled';
+    const finalDescription = (description && description.trim()) || '';
+
     const processedTags = typeof tags === 'string'
       ? tags
           .split(',')
@@ -52,18 +36,15 @@ const createLink = async (req, res, next) => {
           .filter(tag => tag.length > 0)
       : [];
 
-    // Security: Owner ID always comes from the verified JWT user
-    const ownerId = req.user.id;
-
     const link = await Link.create({
       url: url.trim(),
       title: finalTitle,
       description: finalDescription,
-      image: finalImage,
+      image: '',
       category: category && category.trim().length > 0 ? category.trim() : 'General',
       tags: processedTags,
       visibility: visibility,
-      owner: ownerId
+      owner: req.user.id
     });
 
     console.log("Created Link:", link._id);
@@ -361,89 +342,23 @@ const searchLinks = async (req, res, next) => {
       ];
     }
 
-    // 2. Execute search with ranking or standard sort
-    let paginatedLinks = [];
-    let total = 0;
-
-    if (sort === 'relevance') {
-      // Composite relevance ranking:
-      // Combines text relevance with popularity (likes, views) and recency.
-      //
-      // Why weights exist:
-      // 1. textScore * 10: Multiplied by 10 so keyword relevance acts as the primary gatekeeper.
-      // 2. likes * 2: Strong social endorsement signal; boosts higher-liked results among relevant links.
-      // 3. views * 0.1: Secondary engagement metric, discounted so raw clicks do not overpower genuine likes.
-      // 4. recencyScore: A gentle decay bonus (0 to 10 points) ensuring fresh relevant content is not buried.
-      const allMatches = await Link.find(filter)
-        .select('title description url category tags views likes image createdAt owner')
-        .populate('owner', 'username');
-
-      const scored = allMatches.map(link => {
-        let textScore = 0;
-        if (q) {
-          const qLower = q.toLowerCase();
-          const titleLower = (link.title || '').toLowerCase();
-          const descLower = (link.description || '').toLowerCase();
-          const tagsList = Array.isArray(link.tags) ? link.tags : [];
-
-          // Exact title match gets highest priority
-          if (titleLower === qLower) {
-            textScore += 5;
-          } else if (titleLower.startsWith(qLower)) {
-            // Title begins with query prefix (e.g. "code..." for query "cod")
-            textScore += 4;
-          } else if (titleLower.includes(qLower)) {
-            textScore += 2.5;
-          }
-
-          // Exact or partial tag match
-          if (tagsList.some(t => t.toLowerCase() === qLower)) {
-            textScore += 3;
-          } else if (tagsList.some(t => t.toLowerCase().includes(qLower))) {
-            textScore += 2;
-          }
-
-          // Description match
-          if (descLower.includes(qLower)) {
-            textScore += 1;
-          }
-        }
-
-        const likes = Number(link.likes) || 0;
-        const views = Number(link.views) || 0;
-        const daysOld = Math.max(0, (Date.now() - new Date(link.createdAt).getTime()) / (1000 * 60 * 60 * 24));
-        const recencyScore = Math.max(0, 10 - (daysOld * 0.1));
-        const finalScore = (textScore * 10) + (likes * 2) + (views * 0.1) + recencyScore;
-        return { link, finalScore };
-      });
-
-      // Sort in memory by composite finalScore descending
-      scored.sort((a, b) => b.finalScore - a.finalScore);
-
-      total = scored.length;
-      paginatedLinks = scored.slice(skip, skip + limit).map(item => item.link);
-    } else {
-      // Standard database sorting
-      let sortOptions;
-      if (sort === 'likes') {
-        sortOptions = { likes: -1, createdAt: -1 };
-      } else if (sort === 'views') {
-        sortOptions = { views: -1, createdAt: -1 };
-      } else if (sort === 'oldest') {
-        sortOptions = { createdAt: 1 };
-      } else {
-        // 'newest'
-        sortOptions = { createdAt: -1 };
-      }
-
-      total = await Link.countDocuments(filter);
-      paginatedLinks = await Link.find(filter)
-        .select('title description url category tags views likes image createdAt owner')
-        .populate('owner', 'username')
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limit);
+    // 2. Simple MongoDB sorting based on selected sort option
+    let sortOptions = { createdAt: -1 }; // default for 'newest' and 'relevance'
+    if (sort === 'likes') {
+      sortOptions = { likes: -1, createdAt: -1 };
+    } else if (sort === 'views') {
+      sortOptions = { views: -1, createdAt: -1 };
+    } else if (sort === 'oldest') {
+      sortOptions = { createdAt: 1 };
     }
+
+    const total = await Link.countDocuments(filter);
+    const paginatedLinks = await Link.find(filter)
+      .select('title description url category tags views likes image createdAt owner')
+      .populate('owner', 'username')
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
 
     const totalPages = Math.ceil(total / limit) || 1;
     const pagination = {

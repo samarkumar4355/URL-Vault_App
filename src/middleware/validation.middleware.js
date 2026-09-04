@@ -160,7 +160,7 @@ const validateLogin = (req, res, next) => {
 
 /**
  * Core link field validation — common rules for both create and update.
- * requireTitle = false during creation (metadata service will fill it as fallback)
+ * requireTitle = false during creation (defaults to 'Untitled' if left blank)
  * requireTitle = true during update (user should always provide a title when editing)
  */
 const getLinkValidationError = ({ url, title, description, category, tags, visibility }, requireTitle = true) => {
@@ -172,7 +172,7 @@ const getLinkValidationError = ({ url, title, description, category, tags, visib
   if (!trimmedUrl) return 'URL is required.';
   if (!isValidUrl(trimmedUrl)) return 'Please enter a valid URL starting with http:// or https://';
 
-  // Title is required for updates but optional for creates (metadata fills it in)
+  // Title is required for updates but optional for creates (defaults to 'Untitled' if blank)
   if (requireTitle && !trimmedTitle) return 'Title is required.';
   if (trimmedTitle.length > 150) return 'Title cannot exceed 150 characters.';
 
@@ -207,7 +207,7 @@ const getLinkValidationError = ({ url, title, description, category, tags, visib
 /**
  * Validate the create link form.
  * POST /links
- * Title is NOT required here — metadata service will auto-fill it when empty.
+ * Title is optional here (defaults to 'Untitled' if blank).
  * Visibility and URL are still always required.
  */
 const validateCreateLink = (req, res, next) => {
