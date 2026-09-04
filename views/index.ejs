@@ -1,0 +1,47 @@
+<%- include('partials/header', { title: 'LinkVault - URL Management' }) %>
+
+<section class="hero-card">
+  <% if (typeof registered !== 'undefined' && registered) { %>
+    <div class="alert alert-success" style="max-width: 450px; margin: 0 auto 1.5rem;" role="alert">
+      <span>🎉</span>
+      <span>Account created successfully! Welcome to LinkVault.</span>
+    </div>
+  <% } %>
+  <% if (typeof linkCreated !== 'undefined' && linkCreated) { %>
+    <div class="alert alert-success" style="max-width: 450px; margin: 0 auto 1.5rem;" role="alert">
+      <span>🔗</span>
+      <span>Link saved to your vault successfully!</span>
+    </div>
+  <% } %>
+  <div class="badge-pill">
+    <span>✨</span>
+    <span>MVC Architecture Initialized</span>
+  </div>
+  <h1 class="hero-title">Welcome to LinkVault</h1>
+  <p class="hero-description">
+    A robust platform to save, organize, and discover URLs with public and private visibility.
+  </p>
+
+  <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+    <a href="/links" class="btn btn-primary" style="margin: 0;">Browse Public Links</a>
+    <a href="/search" class="btn" style="margin: 0; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe;">🔍 Search Links</a>
+    <a href="/links/create" class="btn" style="margin: 0; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe;">Save a Link</a>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-box">
+      <h3>🌐 Public Links</h3>
+      <p>Share useful bookmarks and resources with the community so anyone can discover them.</p>
+    </div>
+    <div class="feature-box">
+      <h3>🔒 Private Links</h3>
+      <p>Keep sensitive and personal URLs secure, accessible only by your account.</p>
+    </div>
+    <div class="feature-box">
+      <h3>⚡ Built for Scale</h3>
+      <p>Engineered using Node.js, Express, EJS, and MongoDB with clean MVC separation.</p>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,141 @@
+<%- include('partials/header', { title: 'Dashboard & Analytics | LinkVault' }) %>
+
+<div style="max-width: 800px; margin: 2rem auto; text-align: left;">
+  <!-- Header Badge & Title -->
+  <div style="margin-bottom: 2rem;">
+    <div class="badge-pill" style="margin-bottom: 0.75rem;">
+      <span>📊</span>
+      <span>Personal Analytics & Dashboard</span>
+    </div>
+    <h1 class="hero-title" style="font-size: 2.2rem; text-align: left; margin-bottom: 0.5rem;">
+      Welcome, <%= user.username %>
+    </h1>
+    <p class="hero-description" style="margin: 0; text-align: left; color: var(--text-secondary);">
+      Monitor link engagement, track views and likes, and manage your private link collection.
+    </p>
+  </div>
+
+  <!-- Analytics Stats Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <!-- Total Links Card -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Links</span>
+      <h2 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0.5rem 0 0 0;">
+        <%= typeof stats !== 'undefined' ? stats.totalLinks : 0 %>
+      </h2>
+    </div>
+
+    <!-- Public Links Card -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Public Links</span>
+      <h2 style="font-size: 2rem; font-weight: 700; color: #6ee7b7; margin: 0.5rem 0 0 0;">
+        🌐 <%= typeof stats !== 'undefined' ? stats.publicLinks : 0 %>
+      </h2>
+    </div>
+
+    <!-- Private Links Card -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Private Links</span>
+      <h2 style="font-size: 2rem; font-weight: 700; color: #fca5a5; margin: 0.5rem 0 0 0;">
+        🔒 <%= typeof stats !== 'undefined' ? stats.privateLinks : 0 %>
+      </h2>
+    </div>
+
+    <!-- Total Views Card -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Views</span>
+      <h2 style="font-size: 2rem; font-weight: 700; color: #60a5fa; margin: 0.5rem 0 0 0;">
+        👁️ <%= typeof stats !== 'undefined' ? Number(stats.totalViews).toLocaleString() : 0 %>
+      </h2>
+    </div>
+
+    <!-- Total Likes Card -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Likes</span>
+      <h2 style="font-size: 2rem; font-weight: 700; color: #f43f5e; margin: 0.5rem 0 0 0;">
+        ❤️ <%= typeof stats !== 'undefined' ? Number(stats.totalLikes).toLocaleString() : 0 %>
+      </h2>
+    </div>
+  </div>
+
+  <!-- Highlights: Most Viewed & Most Liked Link -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+      <span>⭐</span> Top Performing Links
+    </h3>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+      <!-- Most Viewed Link -->
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1.25rem;">
+        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.05em;">Most Viewed Link</span>
+        <% if (typeof stats !== 'undefined' && stats.mostViewedLink) { %>
+          <h4 style="font-size: 1.05rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">
+            <a href="/links/<%= stats.mostViewedLink._id %>" style="color: var(--text-primary); text-decoration: none;">
+              <%= stats.mostViewedLink.title %>
+            </a>
+          </h4>
+          <p style="margin: 0; font-size: 0.85rem; color: #60a5fa; font-weight: 500;">
+            👁️ <%= stats.mostViewedLink.views %> views &nbsp;·&nbsp;
+            <a href="/links/<%= stats.mostViewedLink._id %>" style="color: #a5b4fc; text-decoration: none;">View Details →</a>
+          </p>
+        <% } else { %>
+          <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--text-secondary); font-style: italic;">
+            No links created yet.
+          </p>
+        <% } %>
+      </div>
+
+      <!-- Most Liked Link -->
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1.25rem;">
+        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.05em;">Most Liked Link</span>
+        <% if (typeof stats !== 'undefined' && stats.mostLikedLink) { %>
+          <h4 style="font-size: 1.05rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">
+            <a href="/links/<%= stats.mostLikedLink._id %>" style="color: var(--text-primary); text-decoration: none;">
+              <%= stats.mostLikedLink.title %>
+            </a>
+          </h4>
+          <p style="margin: 0; font-size: 0.85rem; color: #f43f5e; font-weight: 500;">
+            ❤️ <%= stats.mostLikedLink.likes %> likes &nbsp;·&nbsp;
+            <a href="/links/<%= stats.mostLikedLink._id %>" style="color: #a5b4fc; text-decoration: none;">View Details →</a>
+          </p>
+        <% } else { %>
+          <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--text-secondary); font-style: italic;">
+            No links created yet.
+          </p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Identity Summary -->
+  <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem;">
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <div>
+        <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Username</span>
+        <p style="font-weight: 600; color: var(--text-primary); margin: 0.2rem 0 0 0;"><%= user.username %></p>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Email</span>
+        <p style="font-weight: 600; color: var(--text-primary); margin: 0.2rem 0 0 0;"><%= user.email %></p>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">User ID</span>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); font-family: monospace; margin: 0.2rem 0 0 0;"><%= user.id %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Controls -->
+  <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+    <a href="/links/create" class="btn btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none; margin: 0;">Add Link</a>
+    <a href="/links/my" class="btn" style="padding: 0.75rem 1.5rem; text-decoration: none; margin: 0; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe;">My Links</a>
+    <form action="/auth/logout" method="POST" style="margin: 0;">
+      <button type="submit" class="btn" style="background: #ef4444; border: none; cursor: pointer; padding: 0.75rem 1.5rem; font-family: inherit; margin: 0;">
+        Log Out
+      </button>
+    </form>
+    <a href="/" class="auth-link" style="font-size: 0.95rem;">Return Home</a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'LinkVault' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span>🔗 LinkVault</span>
+        <span class="logo-badge">Core</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/links" class="nav-link">Public Links</a>
+        <a href="/search" class="nav-link">🔍 Search</a>
+        <% const authUser = (typeof user !== 'undefined' && user) || (typeof currentUser !== 'undefined' && currentUser); %>
+        <% if (authUser) { %>
+          <a href="/links/create" class="nav-link">Add Link</a>
+          <a href="/links/my" class="nav-link">My Links</a>
+          <a href="/profile" class="nav-link" style="color: #a5b4fc; font-weight: 600;">
+            👤 <%= authUser.username %>
+          </a>
+          <form action="/auth/logout" method="POST" style="display: inline; margin: 0;">
+            <button type="submit" class="nav-btn-logout">Logout</button>
+          </form>
+        <% } else { %>
+          <a href="/auth/login" class="nav-link">Login</a>
+          <a href="/auth/register" class="nav-link">Register</a>
+        <% } %>
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.5rem;">
+          <span class="status-indicator"></span>
+          <span>Online</span>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <main class="container">

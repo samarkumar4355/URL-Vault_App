@@ -1,0 +1,120 @@
+<%- include('../partials/header', { title: typeof title !== 'undefined' ? title : 'Edit Link | LinkVault' }) %>
+
+<div class="auth-container">
+  <div class="auth-card" style="max-width: 580px;">
+    <div class="auth-header">
+      <div class="badge-pill">
+        <span>✏️</span>
+        <span>Update Resource</span>
+      </div>
+      <h1 class="auth-title">Edit Link</h1>
+      <p class="auth-subtitle">Update your saved URL details and access visibility.</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error" role="alert">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-message"><%= error %></span>
+      </div>
+    <% } %>
+
+    <form action="/links/<%= link._id %>/edit" method="POST" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="url" class="form-label">Destination URL <span style="color: var(--danger);">*</span></label>
+        <input 
+          type="url" 
+          id="url" 
+          name="url" 
+          class="form-input" 
+          value="<%= link.url %>"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="title" class="form-label">Title <span style="color: var(--danger);">*</span></label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          class="form-input" 
+          value="<%= link.title %>"
+          maxlength="150"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Description</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          class="form-input" 
+          rows="3" 
+          maxlength="500"
+          style="resize: vertical; min-height: 80px;"
+        ><%= link.description || '' %></textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label for="category" class="form-label">Category</label>
+          <input 
+            type="text" 
+            id="category" 
+            name="category" 
+            class="form-input" 
+            value="<%= link.category || '' %>"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="tags" class="form-label">Tags</label>
+          <input 
+            type="text" 
+            id="tags" 
+            name="tags" 
+            class="form-input" 
+            value="<%= Array.isArray(link.tags) ? link.tags.join(', ') : (link.tags || '') %>"
+          >
+          <small class="form-hint">Comma-separated</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Visibility <span style="color: var(--danger);">*</span></label>
+        <div style="display: flex; gap: 1.5rem; margin-top: 0.25rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem;">
+            <input 
+              type="radio" 
+              name="visibility" 
+              value="public" 
+              <%= link.visibility === 'public' ? 'checked' : '' %>
+            >
+            <span>🌐 Public <small style="color: var(--text-secondary);">(Anyone can view)</small></span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem;">
+            <input 
+              type="radio" 
+              name="visibility" 
+              value="private" 
+              <%= link.visibility === 'private' ? 'checked' : '' %>
+            >
+            <span>🔒 Private <small style="color: var(--text-secondary);">(Only you)</small></span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+        <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        <a href="/links/my" class="btn" style="background: rgba(51, 65, 85, 0.5); text-align: center; display: block; width: 100%;">Cancel</a>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      <p><a href="/links/my" class="auth-link">Return to My Links</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

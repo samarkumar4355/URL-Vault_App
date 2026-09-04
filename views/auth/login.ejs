@@ -1,0 +1,65 @@
+<%- include('../partials/header', { title: typeof title !== 'undefined' ? title : 'Login | LinkVault' }) %>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="badge-pill">
+        <span>🔑</span>
+        <span>Secure Access</span>
+      </div>
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Sign in to your LinkVault account to access your links.</p>
+    </div>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success" role="alert">
+        <span class="alert-icon">🎉</span>
+        <span class="alert-message"><%= success %></span>
+      </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error" role="alert">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-message"><%= error %></span>
+      </div>
+    <% } %>
+
+    <form action="/auth/login" method="POST" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-input" 
+          placeholder="you@example.com" 
+          value="<%= typeof email !== 'undefined' ? email : '' %>"
+          required
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="form-input" 
+          placeholder="••••••••" 
+          required
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a href="/auth/register" class="auth-link">Create one</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

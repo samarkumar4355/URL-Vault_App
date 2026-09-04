@@ -1,0 +1,50 @@
+<%- include('partials/header', { title: typeof title !== 'undefined' ? title : 'Error | LinkVault' }) %>
+
+<section class="hero-card" style="max-width: 560px; margin: 4rem auto;">
+
+  <!-- Status Code Badge -->
+  <div class="badge-pill" style="border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; background: rgba(239, 68, 68, 0.1); margin-bottom: 1.5rem;">
+    <span>
+      <% if (typeof statusCode !== 'undefined') { %>
+        <%= statusCode === 403 ? '🚫' : statusCode === 404 ? '🔍' : statusCode === 400 ? '⚠️' : '💥' %>
+      <% } else { %>
+        💥
+      <% } %>
+    </span>
+    <span>
+      <%= typeof statusCode !== 'undefined' ? statusCode : '500' %>
+      &nbsp;—&nbsp;
+      <%
+        const codeMap = { 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 500: 'Server Error' };
+        const code = typeof statusCode !== 'undefined' ? statusCode : 500;
+      %>
+      <%= codeMap[code] || 'Error' %>
+    </span>
+  </div>
+
+  <!-- Friendly Message -->
+  <h1 class="hero-title" style="font-size: 1.6rem; margin-bottom: 1rem;">
+    <%= typeof message !== 'undefined' && message ? message : 'Something went wrong.' %>
+  </h1>
+
+  <p class="hero-description" style="margin-bottom: 2rem;">
+    <% if (typeof statusCode !== 'undefined' && statusCode === 403) { %>
+      You are logged in, but you are not allowed to perform this action.
+    <% } else if (typeof statusCode !== 'undefined' && statusCode === 404) { %>
+      The page or resource you were looking for could not be found.
+    <% } else if (typeof statusCode !== 'undefined' && statusCode === 400) { %>
+      Your request contained invalid data. Please check your input and try again.
+    <% } else { %>
+      An unexpected error occurred while processing your request. Please try again.
+    <% } %>
+  </p>
+
+  <!-- Actions -->
+  <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+    <a href="/" class="btn btn-primary" style="margin: 0;">← Return Home</a>
+    <a href="javascript:history.back()" class="btn" style="margin: 0; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe;">Go Back</a>
+  </div>
+
+</section>
+
+<%- include('partials/footer') %>

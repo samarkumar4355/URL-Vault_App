@@ -1,0 +1,160 @@
+<%- include('../partials/header', { title: typeof title !== 'undefined' ? title : 'Link Details | LinkVault' }) %>
+
+<div style="max-width: 720px; margin: 0 auto;">
+
+  <!-- Breadcrumb -->
+  <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+    <a href="/links" style="color: var(--text-secondary); text-decoration: none;">Public Links</a>
+    &nbsp;›&nbsp; Link Details
+  </p>
+
+  <!-- Main card -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden;">
+
+    <!-- OG Image (if present) -->
+    <% if (link.image) { %>
+      <div style="width: 100%; max-height: 240px; overflow: hidden;">
+        <img
+          src="<%= link.image %>"
+          alt="<%= link.title %>"
+          style="width: 100%; height: 240px; object-fit: cover; display: block;"
+          onerror="this.parentElement.style.display='none'"
+          loading="lazy"
+        >
+      </div>
+    <% } %>
+
+    <div style="padding: 2rem 2rem 1.5rem;">
+
+      <!-- Badges row -->
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+        <!-- Category -->
+        <span style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #a5b4fc; background: var(--accent-glow); padding: 0.25rem 0.7rem; border-radius: 4px;">
+          <%= link.category || 'General' %>
+        </span>
+        <!-- Visibility -->
+        <span style="font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.7rem; border-radius: 9999px; <%= link.visibility === 'public' ? 'background: rgba(16, 185, 129, 0.15); color: #6ee7b7;' : 'background: rgba(239, 68, 68, 0.15); color: #fca5a5;' %>">
+          <%= link.visibility === 'public' ? '🌐 Public' : '🔒 Private' %>
+        </span>
+        <!-- Views -->
+        <span style="font-size: 0.75rem; color: var(--text-secondary);">
+          👁 <%= link.views %> <%= link.views === 1 ? 'view' : 'views' %>
+        </span>
+        <!-- Likes -->
+        <span style="font-size: 0.75rem; color: #f43f5e;">
+          ❤️ <%= link.likes || 0 %>
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h1 style="font-size: 1.65rem; font-weight: 700; line-height: 1.3; margin-bottom: 1rem; color: var(--text-primary);">
+        <%= link.title %>
+      </h1>
+
+      <!-- Description -->
+      <% if (link.description) { %>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
+          <%= link.description %>
+        </p>
+      <% } %>
+
+      <!-- Like / Unlike Action Section -->
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: var(--radius-md); flex-wrap: wrap; gap: 0.75rem;">
+        <span style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">
+          ❤️ Likes: <span id="likeCount"><%= link.likes || 0 %></span>
+        </span>
+
+        <% const loggedInUser = (typeof user !== 'undefined' && user) || (typeof currentUser !== 'undefined' && currentUser); %>
+        <% if (loggedInUser) { %>
+          <button
+            type="button"
+            id="likeBtn"
+            data-link-id="<%= link._id %>"
+            data-liked="<%= typeof hasLiked !== 'undefined' && hasLiked ? 'true' : 'false' %>"
+            class="btn"
+            style="margin: 0; padding: 0.45rem 1.1rem; font-size: 0.88rem; cursor: pointer; border-radius: 6px; font-family: inherit; transition: none; <%= typeof hasLiked !== 'undefined' && hasLiked ? 'background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5;' : 'background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1; color: #c7d2fe;' %>"
+          >
+            <%= typeof hasLiked !== 'undefined' && hasLiked ? 'Unlike' : 'Like' %>
+          </button>
+        <% } else { %>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">
+            <a href="/auth/login" style="color: #60a5fa; text-decoration: none;">Login to like this link.</a>
+          </span>
+        <% } %>
+      </div>
+
+      <!-- Clickable URL -->
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">🔗 URL</span>
+        <a
+          href="<%= link.url %>"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="font-size: 0.9rem; color: #60a5fa; text-decoration: none; word-break: break-all;"
+        ><%= link.url %></a>
+      </div>
+
+      <!-- Tags -->
+      <% if (link.tags && link.tags.length > 0) { %>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem;">
+          <% link.tags.forEach(tag => { %>
+            <span style="font-size: 0.78rem; background: rgba(51, 65, 85, 0.5); color: var(--text-secondary); padding: 0.2rem 0.6rem; border-radius: 4px;">
+              #<%= tag %>
+            </span>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <!-- Meta info row -->
+      <div style="display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-secondary); padding-top: 1rem; border-top: 1px solid rgba(51, 65, 85, 0.5); flex-wrap: wrap;">
+        <span>
+          👤 Saved by <strong style="color: var(--text-primary);"><%= link.owner && link.owner.username ? link.owner.username : 'Anonymous' %></strong>
+        </span>
+        <span>
+          📅 <%= new Date(link.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Action footer — only shown to the owner -->
+    <% if (isOwner) { %>
+      <div style="border-top: 1px solid var(--border-color); padding: 1rem 2rem; display: flex; gap: 0.75rem; background: rgba(15, 23, 42, 0.4);">
+        <a
+          href="/links/<%= link._id %>/edit"
+          class="btn"
+          style="margin: 0; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe; font-size: 0.9rem; padding: 0.5rem 1.1rem;"
+        >
+          ✏️ Edit Link
+        </a>
+        <form
+          method="POST"
+          action="/links/<%= link._id %>/delete"
+          style="margin: 0;"
+          onsubmit="return confirm('Delete this link? This cannot be undone.');"
+        >
+          <button
+            type="submit"
+            style="padding: 0.5rem 1.1rem; font-size: 0.9rem; cursor: pointer; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; border-radius: 8px; font-family: inherit;"
+          >
+            🗑️ Delete Link
+          </button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Back link -->
+  <p style="margin-top: 1.5rem; font-size: 0.85rem;">
+    <a href="javascript:history.back()" style="color: var(--text-secondary); text-decoration: none;">← Go back</a>
+    &nbsp;·&nbsp;
+    <a href="/links" style="color: var(--text-secondary); text-decoration: none;">All public links</a>
+    <% const authUser = (typeof user !== 'undefined' && user) || (typeof currentUser !== 'undefined' && currentUser); %>
+    <% if (authUser) { %>
+      &nbsp;·&nbsp;
+      <a href="/links/my" style="color: var(--text-secondary); text-decoration: none;">My links</a>
+    <% } %>
+  </p>
+
+</div>
+
+<%- include('../partials/footer') %>

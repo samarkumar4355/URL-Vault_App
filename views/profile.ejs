@@ -1,0 +1,74 @@
+<%- include('partials/header', { title: typeof title !== 'undefined' ? title : 'Profile | LinkVault' }) %>
+
+<div style="max-width: 680px; margin: 0 auto;">
+
+  <!-- Profile Header Card -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 1.5rem; text-align: center;">
+
+    <!-- Avatar placeholder — initials-based -->
+    <div style="width: 80px; height: 80px; border-radius: 9999px; background: linear-gradient(135deg, #6366f1, #818cf8); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; color: #fff; margin: 0 auto 1.25rem; letter-spacing: -1px;">
+      <%= user.username.charAt(0).toUpperCase() %>
+    </div>
+
+    <!-- Username -->
+    <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem;">
+      <%= user.username %>
+    </h1>
+
+    <!-- Email — displayed but not editable here -->
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+      ✉️ <%= user.email %>
+    </p>
+
+    <!-- Bio -->
+    <% if (user.bio && user.bio.trim().length > 0) { %>
+      <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; max-width: 480px; margin: 0 auto 1.5rem;">
+        <%= user.bio %>
+      </p>
+    <% } else { %>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; font-style: italic; margin-bottom: 1.5rem;">
+        No bio yet. <a href="/profile/edit" style="color: #a5b4fc; text-decoration: none;">Add one →</a>
+      </p>
+    <% } %>
+
+    <!-- Member Since -->
+    <p style="font-size: 0.8rem; color: var(--text-secondary);">
+      Member since <%= new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %>
+    </p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+    <a
+      href="/profile/edit"
+      class="btn btn-primary"
+      id="edit-profile-btn"
+      style="flex: 1; text-align: center; margin: 0;"
+    >
+      ✏️ Edit Profile
+    </a>
+    <a
+      href="/links/my"
+      class="btn"
+      id="my-links-btn"
+      style="flex: 1; text-align: center; margin: 0; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe;"
+    >
+      🔗 My Links
+    </a>
+  </div>
+
+  <!-- Info Summary Cards -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-secondary); margin-bottom: 0.4rem;">Username</p>
+      <p style="font-size: 1rem; font-weight: 600;"><%= user.username %></p>
+    </div>
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+      <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-secondary); margin-bottom: 0.4rem;">Email</p>
+      <p style="font-size: 1rem; font-weight: 600; word-break: break-all;"><%= user.email %></p>
+    </div>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>
