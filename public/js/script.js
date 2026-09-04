@@ -355,6 +355,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── LIKE / UNLIKE LOGIC (DETAILS PAGE) ──────────────────────────────────
   const likeBtn = document.getElementById('likeBtn');
   const likeCountSpan = document.getElementById('likeCount');
+  const likeIconSpan = document.getElementById('likeIcon');
+  const topLikeCountSpan = document.getElementById('topLikeCount');
 
   if (likeBtn && likeCountSpan) {
     likeBtn.addEventListener('click', async (e) => {
@@ -386,16 +388,13 @@ document.addEventListener('DOMContentLoaded', () => {
           likeCountSpan.textContent = data.likes;
           likeBtn.dataset.liked = data.liked ? 'true' : 'false';
 
-          if (data.liked) {
-            likeBtn.textContent = 'Unlike';
-            likeBtn.style.background = 'rgba(239, 68, 68, 0.2)';
-            likeBtn.style.border = '1px solid #ef4444';
-            likeBtn.style.color = '#fca5a5';
-          } else {
-            likeBtn.textContent = 'Like';
-            likeBtn.style.background = 'rgba(99, 102, 241, 0.2)';
-            likeBtn.style.border = '1px solid #6366f1';
-            likeBtn.style.color = '#c7d2fe';
+          if (likeIconSpan) {
+            likeIconSpan.textContent = data.liked ? '❤️' : '🤍';
+          }
+          likeBtn.title = data.liked ? 'Unlike' : 'Like';
+
+          if (topLikeCountSpan) {
+            topLikeCountSpan.textContent = data.likes;
           }
         } else if (data.message) {
           alert(data.message);

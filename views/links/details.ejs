@@ -42,7 +42,7 @@
         </span>
         <!-- Likes -->
         <span style="font-size: 0.75rem; color: #f43f5e;">
-          ❤️ <%= link.likes || 0 %>
+          ❤️ <span id="topLikeCount"><%= link.likes || 0 %></span>
         </span>
       </div>
 
@@ -51,35 +51,17 @@
         <%= link.title %>
       </h1>
 
-      <!-- Description -->
-      <% if (link.description) { %>
-        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
-          <%= link.description %>
-        </p>
-      <% } %>
-
-      <!-- Like / Unlike Action Section -->
-      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: var(--radius-md); flex-wrap: wrap; gap: 0.75rem;">
-        <span style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">
-          ❤️ Likes: <span id="likeCount"><%= link.likes || 0 %></span>
-        </span>
-
-        <% const loggedInUser = (typeof user !== 'undefined' && user) || (typeof currentUser !== 'undefined' && currentUser); %>
-        <% if (loggedInUser) { %>
-          <button
-            type="button"
-            id="likeBtn"
-            data-link-id="<%= link._id %>"
-            data-liked="<%= typeof hasLiked !== 'undefined' && hasLiked ? 'true' : 'false' %>"
-            class="btn"
-            style="margin: 0; padding: 0.45rem 1.1rem; font-size: 0.88rem; cursor: pointer; border-radius: 6px; font-family: inherit; transition: none; <%= typeof hasLiked !== 'undefined' && hasLiked ? 'background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5;' : 'background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1; color: #c7d2fe;' %>"
-          >
-            <%= typeof hasLiked !== 'undefined' && hasLiked ? 'Unlike' : 'Like' %>
-          </button>
+      <!-- Description Section (Replaces old Likes section) -->
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem;">
+        <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; display: block; margin-bottom: 0.35rem;">Description</span>
+        <% if (link.description && link.description.trim().length > 0) { %>
+          <p style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.6; margin: 0; word-break: break-word;">
+            <%= link.description %>
+          </p>
         <% } else { %>
-          <span style="font-size: 0.85rem; color: var(--text-secondary);">
-            <a href="/auth/login" style="color: #60a5fa; text-decoration: none;">Login to like this link.</a>
-          </span>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); font-style: italic; margin: 0;">
+            No description provided.
+          </p>
         <% } %>
       </div>
 
@@ -105,14 +87,42 @@
         </div>
       <% } %>
 
-      <!-- Meta info row -->
-      <div style="display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-secondary); padding-top: 1rem; border-top: 1px solid rgba(51, 65, 85, 0.5); flex-wrap: wrap;">
-        <span>
-          👤 Saved by <strong style="color: var(--text-primary);"><%= link.owner && link.owner.username ? link.owner.username : 'Anonymous' %></strong>
-        </span>
-        <span>
-          📅 <%= new Date(link.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %>
-        </span>
+      <!-- Meta info row with Like button on the right -->
+      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary); padding-top: 1rem; border-top: 1px solid rgba(51, 65, 85, 0.5); flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+          <span>
+            👤 Saved by <strong style="color: var(--text-primary);"><%= link.owner && link.owner.username ? link.owner.username : 'Anonymous' %></strong>
+          </span>
+          <span>
+            📅 <%= new Date(link.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %>
+          </span>
+        </div>
+
+        <div>
+          <% const loggedInUser = (typeof user !== 'undefined' && user) || (typeof currentUser !== 'undefined' && currentUser); %>
+          <% if (loggedInUser) { %>
+            <button
+              type="button"
+              id="likeBtn"
+              data-link-id="<%= link._id %>"
+              data-liked="<%= typeof hasLiked !== 'undefined' && hasLiked ? 'true' : 'false' %>"
+              style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--text-primary); font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; font-family: inherit; transition: all 0.2s;"
+              title="<%= typeof hasLiked !== 'undefined' && hasLiked ? 'Unlike' : 'Like' %>"
+            >
+              <span id="likeIcon"><%= typeof hasLiked !== 'undefined' && hasLiked ? '❤️' : '🤍' %></span>
+              <span id="likeCount"><%= link.likes || 0 %></span>
+            </button>
+          <% } else { %>
+            <a
+              href="/auth/login"
+              style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--text-primary); font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-family: inherit;"
+              title="Login to like"
+            >
+              <span id="likeIcon">🤍</span>
+              <span id="likeCount"><%= link.likes || 0 %></span>
+            </a>
+          <% } %>
+        </div>
       </div>
     </div>
 
