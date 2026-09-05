@@ -16,10 +16,16 @@
         <span>🔗 LinkVault</span>
         <span class="logo-badge">Core</span>
       </a>
-      <nav class="nav-links">
+      <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+      <nav class="nav-links" id="navLinks">
         <a href="/" class="nav-link">Home</a>
         <a href="/links" class="nav-link">Public Links</a>
         <a href="/search" class="nav-link">🔍 Search</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
         <% const authUser = (typeof user !== 'undefined' && user) || (typeof currentUser !== 'undefined' && currentUser); %>
         <% if (authUser) { %>
           <a href="/links/create" class="nav-link">Add Link</a>
@@ -34,7 +40,7 @@
           <a href="/auth/login" class="nav-link">Login</a>
           <a href="/auth/register" class="nav-link">Register</a>
         <% } %>
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.5rem;">
+        <div class="nav-status">
           <span class="status-indicator"></span>
           <span>Online</span>
         </div>
